@@ -48,4 +48,30 @@ public class UserService {
 		List<Reimbursement> reimb = facade.showAllReimbByUsername(username);
 		return reimb;
 	}
+
+	public List<Reimbursement> returnReimbByStatus(String status) {
+		Facade facade = new Facade();
+		List<Reimbursement> reimb = facade.showAllByStatus(status);
+		System.out.println(reimb);
+		return reimb;
+	}
+
+	public List<Reimbursement> updateReimb(String newStatus, String resolverUsername, int reimbId) {
+		Facade facade = new Facade();
+		facade.updateReimbursement(newStatus, resolverUsername, reimbId);
+		return returnReimbByStatus("Pending");
+	}
+
+	public List<Reimbursement> addReimb(double amount, String description, int author, int type) {
+		Facade facade = new Facade();
+		Reimbursement newReimb = facade.addNewReimbursement(amount, description, author, type);
+		return facade.showAllReimbByUsername(newReimb.getAuthor().getUsername());
+	}
+
+/*	public void addReimb(String newAmount, String username, String newDescription, String newType) {
+		Facade facade = new Facade();
+		Reimbursement reimb = facade.createReimbObject(newAmount, newDescription, username, newType);
+		facade.addNewReimbursement(reimb);
+		
+	}*/
 }

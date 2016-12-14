@@ -8,6 +8,7 @@ import java.util.List;
 import javax.naming.AuthenticationException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ers.beans.Users;
 import com.ers.middle.BusinessDelegate;
 
+@WebServlet(urlPatterns="*") //takes all HTTP requests
 public class DispatcherServlet extends HttpServlet {
 
 	@Override
@@ -76,10 +78,27 @@ public class DispatcherServlet extends HttpServlet {
 			out.println("Wrong login");
 		}*/
 		
-		//String requestURI = request.getRequestURI();
+		String requestURI = request.getRequestURI();
 		UserController userCtrl = new UserController();
-		userCtrl.login(request, response);
-		
+		/*userCtrl.login(request, response);*/
+		switch(requestURI){
+			case "/ers/home.do": {
+				userCtrl.login(request, response);
+				break;
+			} 
+			case "/ers/submitted.do":{
+				userCtrl.update(request, response);
+				break;
+			}
+			case "/ers/added.do":{
+				userCtrl.add(request, response);
+				break;
+			}
+			default:{
+				response.setStatus(404);
+				response.sendRedirect("oops.html");
+			}
+		}
 	}
 	
 	@Override

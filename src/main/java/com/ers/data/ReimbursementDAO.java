@@ -113,7 +113,10 @@ class ReimbursementDAO {
 		stmt.setString(1, username);
 		ResultSet rs = stmt.executeQuery();
 		mapRows(rs, results);
-		if(results.size() == 0) System.out.println("Could not find the user " + username + ".");
+		if(results.size() == 0) {
+			System.out.println("Could not find the user " + username + ".");
+			return null;
+		}
 		return results;
 	}
 	
@@ -147,7 +150,7 @@ class ReimbursementDAO {
 	 * @throws SQLException
 	 */
 	
-	public void selectByStatus(String status) throws SQLException{
+	public List<Reimbursement> selectByStatus(String status) throws SQLException{
 		List<Reimbursement> results = new ArrayList<Reimbursement>();
 		String sql = "SELECT * FROM ERS_REIMBURSEMENT " +
 					 "WHERE REIMB_STATUS_ID = " +
@@ -156,6 +159,8 @@ class ReimbursementDAO {
 		stmt.setString(1, status);
 		ResultSet rs = stmt.executeQuery();
 		mapRows(rs, results);
+		System.out.println("rows mapped");
+		return results;
 	}
 	
 	/**

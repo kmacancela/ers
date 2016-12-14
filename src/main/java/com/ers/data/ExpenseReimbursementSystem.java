@@ -10,7 +10,9 @@ public class ExpenseReimbursementSystem {
 		System.out.println(user);*/
 		//System.out.println(user.getPassword().equals("party5"));
 		
-		System.out.println(facade.showAllReimbByUsername("burgers4me"));
+/*		System.out.println(facade.showAllReimbByUsername("burgers4me"));*/
+		
+/*		facade.showAllByStatus("Pending");*/
 		
 /*		facade.updateReimbursement("Approved", "coder123", 11);*/
 		

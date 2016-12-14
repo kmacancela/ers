@@ -18,15 +18,20 @@ class UsersDAO {
 		this.conn = conn;
 	}
 	
-	//don't think i need
+/*	//don't think i need
 	public void selectAllUsers() throws SQLException{
 		String sql = "SELECT * FROM ERS_USERS";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		ResultSet rs = stmt.executeQuery();
 		mapRows(rs);	
-	}
+	}*/
 
-	//don't think i need
+	/**
+	 * 
+	 * @param givenId
+	 * @throws SQLException
+	 */
+	
 	public void selectById(int givenId) throws SQLException{
 		String sql = "SELECT * FROM ERS_USERS WHERE " + 
 					 "ERS_USERS_ID = ?";
@@ -41,17 +46,20 @@ class UsersDAO {
 			String firstName = rs.getString("USER_FIRST_NAME");
 			String lastName = rs.getString("USER_LAST_NAME");
 			String email = rs.getString("USER_EMAIL");
+			
 			int roleId = rs.getInt("USER_ROLE_ID");
-			obj = new Users(id,
-					  		username,
-					  		password,
-					  		firstName,
-					  		lastName,
-					  		email,
-					  		roleId);
+			UserRolesDAO roleDAO = new UserRolesDAO(conn);
+			UserRoles role = roleDAO.createRoleObj(roleId);
+			obj = new Users(id,username,password,firstName,lastName,email,role);
 		}
 		System.out.println(obj);
 	}
+	
+	/**
+	 * 
+	 * @param rs
+	 * @throws SQLException
+	 */
 	
 	private void mapRows(ResultSet rs) throws SQLException {
 		List<Users> results = new ArrayList<Users>();
@@ -67,7 +75,7 @@ class UsersDAO {
 			UserRolesDAO roleDAO = new UserRolesDAO(conn);
 			UserRoles role = roleDAO.createRoleObj(roleId);
 			
-			Users obj = new Users(id,username,password,firstName,lastName,email,roleId);
+			Users obj = new Users(id,username,password,firstName,lastName,email,role);
 			results.add(obj);
 		}
 		for(int i = 0; i < results.size(); i++) {
@@ -75,14 +83,19 @@ class UsersDAO {
         }
 	}
 	
-	//don't think i need
+	/**
+	 * 
+	 * @param givenUsername
+	 * @return
+	 * @throws SQLException
+	 */
+	
 	//would return 1 row because username is unique
 	public Users getUserInfoByUsername(String givenUsername) throws SQLException{
 		String sql = "SELECT * FROM ERS_USERS " +
 					 "WHERE ERS_USERNAME = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, givenUsername);
-		//stmt.executeQuery();
 		ResultSet rs = stmt.executeQuery();
 		Users obj = null;
 		while(rs.next()){
@@ -92,8 +105,12 @@ class UsersDAO {
 			String firstName = rs.getString("USER_FIRST_NAME");
 			String lastName = rs.getString("USER_LAST_NAME");
 			String email = rs.getString("USER_EMAIL");
+			
 			int roleId = rs.getInt("USER_ROLE_ID");
-			obj = new Users(id,username,password,firstName,lastName,email,roleId);
+			UserRolesDAO roleDAO = new UserRolesDAO(conn);
+			UserRoles role = roleDAO.createRoleObj(roleId);
+			
+			obj = new Users(id,username,password,firstName,lastName,email,role);
 		}
 		System.out.println(obj);
 		return obj;
@@ -153,8 +170,12 @@ class UsersDAO {
 		String firstName = rs.getString("USER_FIRST_NAME");
 		String lastName = rs.getString("USER_LAST_NAME");
 		String email = rs.getString("USER_EMAIL");
+		
 		int roleId = rs.getInt("USER_ROLE_ID");
-		Users user = new Users(userId, username, password, firstName, lastName, email, roleId);
+		UserRolesDAO roleDAO = new UserRolesDAO(conn);
+		UserRoles role = roleDAO.createRoleObj(roleId);
+		
+		Users user = new Users(userId, username, password, firstName, lastName, email, role);
 		return user;
 	}
 }

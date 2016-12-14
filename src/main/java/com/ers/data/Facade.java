@@ -23,18 +23,22 @@ public class Facade {
 	}
 	
 	public Users createUserObject(int userId) throws SQLException{
-		UsersDAO userDAO = new UsersDAO(getConnection());
+		Connection conn = getConnection();
+		UsersDAO userDAO = new UsersDAO(conn);
 		Users user = null;
 		user = userDAO.createUserObj(userId);
+		conn.close();
 		return user;
 	}
 	
 	
 	public Users getUserByName(String username){
-		UsersDAO dao = new UsersDAO(getConnection());
+		Connection conn = getConnection();
+		UsersDAO dao = new UsersDAO(conn);
 		Users result = null;
 		try {
 			result = dao.getUserInfoByUsername(username);
+			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,10 +47,12 @@ public class Facade {
 	}
 	
 	public ReimbursementType createTypeObject(int typeId){
-		ReimbursementTypeDAO typeDAO = new ReimbursementTypeDAO(getConnection());
+		Connection conn = getConnection();
+		ReimbursementTypeDAO typeDAO = new ReimbursementTypeDAO(conn);
 		ReimbursementType type = null;
 		try {
 			type = typeDAO.createTypeObj(typeId);
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -54,51 +60,70 @@ public class Facade {
 	}
 	
 	public ReimbursementStatus createStatusObject(int statusId){
-		ReimbursementStatusDAO statusDAO = new ReimbursementStatusDAO(getConnection());
+		Connection conn = getConnection();
+		ReimbursementStatusDAO statusDAO = new ReimbursementStatusDAO(conn);
 		ReimbursementStatus status = null;
 		try {
 			status = statusDAO.createStatusObj(statusId);
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return status;
 	}
 	
-	public void createReimbObject(double amount, String description, int authorId, int typeId) throws SQLException{
-		ReimbursementDAO reimbDAO = new ReimbursementDAO(getConnection());
+																	//maybe change this to String username
+	public Reimbursement addNewReimbursement(double amount, String description, int authorId, int typeId){
+		Connection conn = getConnection();
+		ReimbursementDAO reimbDAO = new ReimbursementDAO(conn);
 		ReimbursementStatusDAO statusDAO = new ReimbursementStatusDAO(getConnection());
-		Users author = createUserObject(authorId);
+		Users author = null;
 		ReimbursementType type = createTypeObject(typeId);
-			ReimbursementStatus status = statusDAO.createStatusObj(1);
-			Reimbursement reimb = new Reimbursement(reimbDAO.getNextId(), amount, getCurrentTimeStamp(),
+		ReimbursementStatus status = null;
+		Reimbursement reimb = null;
+		try {
+			author = createUserObject(authorId);
+			status = statusDAO.createStatusObj(1);
+			reimb = new Reimbursement(reimbDAO.getNextId(), amount, getCurrentTimeStamp(),
 					(Timestamp)null, description, author, null, status, type);
 			reimbDAO.insert(reimb);
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reimb;
 	}
 	
-	public void addNewReimbursement(Reimbursement reimb){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
+/*	public void addNewReimbursement(Reimbursement reimb){
+		Connection conn = getConnection();
+		ReimbursementDAO dao = new ReimbursementDAO(conn);
 		try {
 			dao.insert(reimb);
+			conn.close();
 		} catch (SQLException e) {
 			System.out.println("Could not add new reimbursement.");
 		}
-	}
+	}*/
 	
 	public void updateReimbursement(String status, String username, int reimbId){
+		Connection conn = getConnection();
 		Timestamp currentDate = getCurrentTimeStamp();
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
+		ReimbursementDAO dao = new ReimbursementDAO(conn);
 		try {
 			dao.updateReimbursement(status, username, reimbId, currentDate);
+			conn.close();
 		} catch (SQLException e) {
 			System.out.println("Could not update reimbursement ID# " + reimbId + ".");
 		}
 	}
 	
 	public List<Reimbursement> showAllReimbByUsername(String username){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
+		Connection conn = getConnection();
+		ReimbursementDAO dao = new ReimbursementDAO(conn);
 		List<Reimbursement> result = null;
 		try {
 			result = dao.selectAllByUsername(username);
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -106,7 +131,21 @@ public class Facade {
 	}
 	
 	//for managers
-	public void showAllPending(){
+	public List<Reimbursement> showAllByStatus(String status){
+		Connection conn = getConnection();
+		ReimbursementDAO dao = new ReimbursementDAO(conn);
+		List<Reimbursement> result = null;
+		try {
+			result = dao.selectByStatus(status);
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println("Could not show pending reimbursements.");
+		}
+		System.out.println(result);
+		return result;
+	}
+	
+/*	public void showAllPending(){
 		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
 		try {
 			dao.selectByStatus("Pending");
@@ -131,9 +170,9 @@ public class Facade {
 		} catch (SQLException e) {
 			System.out.println("Could not show denied reimbursements.");
 		}
-	}
+	}*/
 	
-	//for employees
+/*	//for employees
 	public void showAllUserPending(String username){
 		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
 		try {
@@ -159,48 +198,72 @@ public class Facade {
 		} catch (SQLException e) {
 			System.out.println("Could not show denied reimbursements. The username " + username + " might not have been found.");
 		}
-	}
+	}*/
 	
 	public boolean accountFound(String username){
-		UsersDAO dao = new UsersDAO(getConnection());
+		Connection conn = getConnection();
+		UsersDAO dao = new UsersDAO(conn);
 		try {
 			if(dao.usernameFound(username)){
 				System.out.println(username + " found!");
+				conn.close();
 				return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		System.out.println(username + " not found!");
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 	
 	public boolean correctLogin(String username, String password){
-		UsersDAO dao = new UsersDAO(getConnection());
+		Connection conn = getConnection();
+		UsersDAO dao = new UsersDAO(conn);
 		try {
 			if(dao.passwordCorrect(username, password)){
 				System.out.println("Correct login! " + username + " is now logged in!");
+				conn.close();
 				return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		System.out.println("Incorrect login. Try again.");
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 	
 	public String empOrManager(String username){
+		Connection conn = getConnection();
 		String result = null;
-		UsersDAO dao = new UsersDAO(getConnection());
+		UsersDAO dao = new UsersDAO(conn);
 		try {
 			if(dao.empOrManager(username) == 1){
 				result = "Employee";
+				conn.close();
 				return result;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		result = "Manager";
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 	
@@ -214,11 +277,11 @@ public class Facade {
 	    return new java.sql.Timestamp(today.getTime());
 	}
 	
-	public void close(){
+/*	public void close(){
 		try {
 			getConnection().close();
 		} catch (SQLException e) {
 			System.out.println("Could not close connection.");
 		}
-	}
+	}*/
 }
