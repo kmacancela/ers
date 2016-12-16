@@ -22,12 +22,17 @@ public class Facade {
 		return conn;
 	}
 	
-	public Users createUserObject(int userId) throws SQLException{
+	public Users createUserObject(int userId){
 		Connection conn = getConnection();
 		UsersDAO userDAO = new UsersDAO(conn);
 		Users user = null;
-		user = userDAO.createUserObj(userId);
-		conn.close();
+		try {
+			user = userDAO.createUserObj(userId);
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return user;
 	}
 	
@@ -265,6 +270,41 @@ public class Facade {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public void addUserToDB(String username, String password, String fName, String lName, String email, int roleId){
+		Connection conn = getConnection();
+		UsersDAO dao = new UsersDAO(conn);
+		try {
+			dao.addUserToDB(username, password, fName, lName, email, roleId);
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String usersHashedPassword(String username){
+		Connection conn = getConnection();
+		UsersDAO dao = new UsersDAO(conn);
+		String hashed = null;
+		try {
+			hashed = dao.getHashed(username);
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hashed;
+	}
+	
+	public void updateUsersWithHash(String username){
+		Connection conn = getConnection();
+		UsersDAO dao = new UsersDAO(conn);
+		try {
+			dao.updateUserPassword(username);
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

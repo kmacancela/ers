@@ -54,7 +54,7 @@ public class BusinessDelegate {
 	}
 
 	public List<Reimbursement> addReimbursement(String amount, String description, String author, String type) {
-		System.out.println(amount + description + author + type +"##############");
+		//System.out.println(amount + description + author + type +"##############");
 		return new UserService().addReimb(Double.parseDouble(amount), description, Integer.parseInt(author), Integer.parseInt(type));
 	}
 

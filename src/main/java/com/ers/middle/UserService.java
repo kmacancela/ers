@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.naming.AuthenticationException;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.ers.beans.Reimbursement;
 import com.ers.beans.Users;
 import com.ers.data.Facade;
@@ -36,11 +38,20 @@ public class UserService {
 		return false;*/
 		
 		
+/*		if (BCrypt.checkpw(password, facade.usersHashedPassword("username")));
+			System.out.println("It matches");
+		else
+			System.out.println("It does not match");*/
+		
 		Facade facade = new Facade();
 		Users user = facade.getUserByName(username);
 		if(user == null) throw new AuthenticationException();
-		else if(user.getPassword().equals(password))
+/*		else if(user.getPassword().equals(password))
+			return user;*/
+		else if (BCrypt.checkpw(password, facade.usersHashedPassword(username))){
+			System.out.println("True");
 			return user;
+		}
 		throw new AuthenticationException();
 	}
 	

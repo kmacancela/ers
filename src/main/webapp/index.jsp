@@ -115,7 +115,17 @@ section{
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
+              <li class="active"><a href="#">Home 
+              
+              <c:choose>
+						<c:when test="${user.role.userRole == 'Manager'}">
+              				<span class="badge">${fn:length(pending) - 1}</span>
+              			</c:when>
+              			<c:when test="${user.role.userRole == 'Employee'}">
+              				<span class="badge">${fn:length(usersData) - 1}</span>
+              			</c:when>
+              		</c:choose>
+              </a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">View by...<span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -128,12 +138,22 @@ section{
                   <li><a href="#">One more separated link</a></li>
                 </ul>
               </li>
-              <li><a href="#">Add new...</a></li>
+              <li><a href="#add">Add new...</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <!-- <li class="active"><a href="./">Default <span class="sr-only">(current)</span></a></li>
               <li><a href="../navbar-static-top/">Static top</a></li> -->
-              <li><a href="../navbar-fixed-top/">Log off</a></li>
+              
+              <li role="presentation">
+             <!--  <a href="../navbar-fixed-top/">
+              Log off
+              </a> -->
+              <form action="logoff.do" method="post">
+    			<input type="submit" value="Logout" />
+			</form>
+              
+              </li>
+              
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -167,7 +187,7 @@ section{
 <!-- 		<br />
 		<br/><a href="#add">Add a reimbursement now!</a> -->
 <div class="tbl-header">
-    <table cellpadding="0" cellspacing="0" border="0">
+    <table cellpadding="0" cellspacing="0" border="0" >
 			<thead>
 				<tr>
 
@@ -273,7 +293,7 @@ section{
 		</table>
 	</div>
 	
-	<c:choose>
+<c:choose>
 	<c:when test="${user.role.userRole == 'Employee'}">
 	<a name="add"></a>
 	<h1>Add a new reimbursement</h1><br/><br/>
@@ -282,38 +302,38 @@ section{
 	***Maybe I can put this in a submit.do page and then it redirects them to /home.do Will possibly
 	need another jsp page***-->
 	
-	<form method="post" action="added.do" onsubmit="greeting()">
+	<form method="post" action="added.do">
+	
 	<input type="hidden" name="author" value="${user.usersId}" />
-	Amount: <div class="input-group"><input name="amount" placeholder="amount" style="color: black" required="required" class="form-control"> </div>   
-	Description: <div class="input-group"><input name="description" placeholder="description" style="color: black" class="form-control"> </div>  
-	Type:<div class="input-group"> <select name="type" required="required" style="color: black" class="form-control">
-		<option value="" disabled selected>Select...</option>
+	 <label>Amount</label> 
+	 	<!-- i had input-group instead of form-group -->
+	 	<!-- <div class="form-group"><input name="amount" placeholder="amount" style="color: black" required="required" class="form-control"> </div> -->   
+		
+		<div class="input-group">
+      <div class="input-group-addon">$</div>
+      <input type="text" class="form-control" name="amount" id="exampleInputAmount" placeholder="Amount" required="required">
+    </div>
+    
+	<br/><label>Description</label> 
+	<!-- <div class="input-group"><input name="description" placeholder="description" style="color: black" class="form-control"> </div>  --> 
+	
+	<textarea class="form-control" rows="3" name="description" placeholder="Description"></textarea>
+	
+	<br/><label>Type</label>
+	<select name="type" required="required" style="color: black" class="form-control">
+		<option value="" disabled selected>Select type...</option>
 		<option value="1">Lodging</option>
 		<option value="2">Travel</option>
 		<option value="3">Food</option>
 		<option value="4">Other</option>
-	</select>    </div><br/>
+	</select>    <br/>
 	<input type="submit" value="Submit" style="color: black" class="btn btn-default">
 	</form>
 	<br/><br><br/>
 	</c:when>
-	</c:choose>
+</c:choose>
 	<br/><br/><br/>
 </body>
-
-<!-- <script type="text/javascript">
-/* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
-function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
-}
-
-/* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
-}
-</script> -->
 
 <script type="text/javascript">
 $(window).on("load resize ", function() {
@@ -321,8 +341,6 @@ $(window).on("load resize ", function() {
   $('.tbl-header').css({'padding-right':scrollWidth});
 }).resize();
 
-/* materializecss */
-   $(".button-collapse").sideNav();
 </script>
 
 </html>

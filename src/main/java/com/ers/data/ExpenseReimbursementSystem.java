@@ -1,10 +1,21 @@
 package com.ers.data;
 
+import org.mindrot.jbcrypt.BCrypt;
 
 public class ExpenseReimbursementSystem {
 	
 	public static void main(String[] args) {
 		Facade facade = new Facade();
+		
+/*		facade.addUserToDB("treehugger", "always", "Chris", "Flores", "cflores@gmail.com", 2);*/
+		//facade.getUserByName("pusheen");
+		
+/*		if (BCrypt.checkpw("always", facade.usersHashedPassword("treehugger")))
+			System.out.println("It matches");
+		else System.out.println("It does not match");*/
+		
+		facade.updateUsersWithHash("pusheen");
+		
 /*		Users user = facade.createUserObject(1);
 		//Users user = facade.getUserByName("123unicorn");
 		System.out.println(user);*/
