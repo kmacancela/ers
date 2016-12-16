@@ -92,6 +92,7 @@ public class DispatcherServlet extends HttpServlet {
 			}
 			case "/ers/added.do":{
 				userCtrl.add(request, response);
+				/*response.sendRedirect("index.jsp");*/
 				break;
 			}
 			default:{

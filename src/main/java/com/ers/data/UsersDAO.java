@@ -107,12 +107,15 @@ class UsersDAO {
 			String email = rs.getString("USER_EMAIL");
 			
 			int roleId = rs.getInt("USER_ROLE_ID");
-			UserRolesDAO roleDAO = new UserRolesDAO(conn);
-			UserRoles role = roleDAO.createRoleObj(roleId);
+			UserRoles role = null;
+			if(roleId != 0){
+				UserRolesDAO roleDAO = new UserRolesDAO(conn);
+				role = roleDAO.createRoleObj(roleId);
+			}
 			
 			obj = new Users(id,username,password,firstName,lastName,email,role);
 		}
-		System.out.println(obj);
+		System.out.println("Users object: " +obj);
 		return obj;
 	}
 	

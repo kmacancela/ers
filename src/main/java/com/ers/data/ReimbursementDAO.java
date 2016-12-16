@@ -159,7 +159,7 @@ class ReimbursementDAO {
 		stmt.setString(1, status);
 		ResultSet rs = stmt.executeQuery();
 		mapRows(rs, results);
-		System.out.println("rows mapped");
+		//System.out.println("rows mapped");
 		return results;
 	}
 	

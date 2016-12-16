@@ -38,7 +38,8 @@ public class UserService {
 		
 		Facade facade = new Facade();
 		Users user = facade.getUserByName(username);
-		if(user.getPassword().equals(password))
+		if(user == null) throw new AuthenticationException();
+		else if(user.getPassword().equals(password))
 			return user;
 		throw new AuthenticationException();
 	}
