@@ -24,7 +24,6 @@ public class DispatcherServlet extends HttpServlet {
 		
 		String requestURI = request.getRequestURI();
 		UserController userCtrl = new UserController();
-		/*userCtrl.login(request, response);*/
 		switch(requestURI){
 			case "/ers/home.do": {
 				userCtrl.login(request, response);
@@ -43,6 +42,7 @@ public class DispatcherServlet extends HttpServlet {
 				userCtrl.pending()
 				break;
 			}*/
+			//TODO must add a filter***
 			case "/ers/logoff.do":{
 				request.getSession().invalidate();
 		        response.sendRedirect(request.getContextPath() + "/login.jsp");

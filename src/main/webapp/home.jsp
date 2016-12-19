@@ -1,216 +1,288 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<%@page contentType="text/html; charset=ISO-8859-1"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="java.util.List"%>
+<%@ page import="com.ers.beans.Reimbursement"%>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Homepage</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-	crossorigin="anonymous">
+<title>ERS: View your reimbursements</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<!-- Optional theme -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-	crossorigin="anonymous">
+<style>
+	body {
+		color: black;
+	}
+	.mybtn-blue {
+   color: green;
+}
 
-<!-- Latest compiled and minified JavaScript -->
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-	integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-	crossorigin="anonymous"></script>
+
+
+	h1{
+	  font-size: 30px;
+	  color: black;
+	  text-transform: uppercase;
+	  font-weight: 300;
+	  text-align: center;
+	  margin-bottom: 15px;
+	}
+	table{
+	  width:100%;
+	  table-layout: fixed;
+	}
+	.tbl-header{
+	  /* background-color: rgba(255,255,255,0.3); */
+	  background-color: orange;
+	 }
+	.tbl-content{
+	  overflow-x:auto;
+	  margin-top: 0px;
+	  border: 1px solid rgba(255,255,255,0.3);
+	}
+	th{
+	  padding: 20px 15px;
+	  text-align: left;
+	  font-weight: 500;
+	  font-size: 12px;
+	 /*  color: #fff; */
+	 color:black;
+	  text-transform: uppercase;
+	}
+	td{
+	  padding: 15px;
+	  text-align: left;
+	  vertical-align:middle;
+	  font-weight: 300;
+	  font-size: 12px;
+	 /*  color: #fff; */
+	 color:black;
+	  border-bottom: solid 1px rgba(255,255,255,0.1);
+	}
+	
+	
+	/* demo styles */
+	
+	@import url(http://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+	/* body{
+	  background: -webkit-linear-gradient(left, #25c481, #000000);
+	  background: linear-gradient(to bottom, #082047, #000000);
+	  font-family: 'Roboto', sans-serif;
+	} */
+	section{
+	  margin: 50px;
+	}
+</style>
 </head>
-<body>
-	<%-- <%@ include file="navbar.jsp" %>   <!-- static -->
-<h1>Homepage</h1>
-<p>This is my homepage</p>
-<h2>Pick a day from this list:</h2>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
+
+<body style="background-color: white">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid" >
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">Welcome, ${user.firstName} ${user.lastName}!</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+		<li class="active"><a href="#">Home         
+			<c:choose>
+				<c:when test="${user.role.userRole == 'Manager'}">
+              				<span class="badge">${fn:length(pending) - 1}</span>
+              			</c:when>
+              			<c:when test="${user.role.userRole == 'Employee'}">
+              				<span class="badge">${fn:length(usersData) - 1}</span>
+              			</c:when>
+              		</c:choose>
+              </a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">View by...<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Pending</a></li>
+                  <li><a href="#">Approved</a></li>
+                  <li><a href="#">Denied</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Nav header</li>
+                  <li><a href="#">Separated link</a></li>
+                  <li><a href="#">One more separated link</a></li>
+                </ul>
+              </li>
+              <li><a href="#add">Add new...</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <!-- <li class="active"><a href="./">Default <span class="sr-only">(current)</span></a></li>
+              <li><a href="../navbar-static-top/">Static top</a></li> -->
+              
+              <li role="presentation">
+             <!--  <a href="../navbar-fixed-top/">
+              Log off
+              </a> -->
+              <form action="logoff.do" method="post">
+    			<input type="submit" value="Logout" />
+			</form>
+              
+              </li>
+              
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
 
 
 
-	<div class="container">
-		<div id="loginbox" style="margin-top: 50px;"
-			class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<div class="panel-title">Sign In</div>
-					<!-- <div
-						style="float: right; font-size: 80%; position: relative; top: -10px">
-						<a href="#">Forgot password?</a>
-					</div> -->
-				</div>
 
-				<div style="padding-top: 30px" class="panel-body">
-
-					<div style="display: none" id="login-alert"
-						class="alert alert-danger col-sm-12"></div>
-
-					<form id="loginform" class="form-horizontal" role="form">
+	<br/><br/><br/><br/>
 
 
-<!-- username -->
-						<div style="margin-bottom: 25px" class="input-group">
-							<span class="input-group-addon"><i
-								class="glyphicon glyphicon-user"></i></span> <input id="login-username"
-								type="text" class="form-control" name="username" value=""
-								placeholder="username">
-						</div>
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped" >
+			<thead>
+				<tr>
 
-						<div style="margin-bottom: 25px" class="input-group">
-							<span class="input-group-addon"><i
-								class="glyphicon glyphicon-lock"></i></span> <input id="login-password"
-								type="password" class="form-control" name="password"
-								placeholder="password">
-						</div>
-
-
-
-						<!-- <div class="input-group">
-							<div class="checkbox">
-								<label> <input id="login-remember" type="checkbox"
-									name="remember" value="1"> Remember me
-								</label>
-							</div>
-						</div> -->
-
-
-						<div style="margin-top: 10px" class="form-group">
-							<!-- Button -->
-
-							<div class="col-sm-12 controls">
-								<a id="btn-login" href="#" class="btn btn-success">Login </a>
-
-							</div>
-						</div>
-
-
-						<!-- <div class="form-group">
-							<div class="col-md-12 control">
-								<div
-									style="border-top: 1px solid #888; padding-top: 15px; font-size: 85%">
-									Don't have an account! <a href="#"
-										onClick="$('#loginbox').hide(); $('#signupbox').show()">
-										Sign Up Here </a>
-								</div>
-							</div>
-						</div> -->
-					</form>
-				</div>
+					<c:choose>
+						<c:when test="${user.role.userRole == 'Manager'}">
+							<th></th>
+							<th>Amount</th>
+							<th>Submitted On</th>
+							<th>Description</th>
+							<th>Submitted By</th>
+							<th>Type</th>
+							<th>Status</th>
+							<th></th>
+				</tr>
+			</thead>
+			</table>
 			</div>
-		</div>
-		<div id="signupbox" style="display: none; margin-top: 50px"
-			class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<div class="panel-title">Sign Up</div>
-					<div
-						style="float: right; font-size: 85%; position: relative; top: -10px">
-						<a id="signinlink" href="#"
-							onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign
-							In</a>
-					</div>
-				</div>
-				<div class="panel-body">
-					<form id="signupform" class="form-horizontal" role="form">
+			<div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+			<tbody>
+				<c:forEach var="i" begin="0" end="${fn:length(pending) - 1}">
+					<form method="post" action="submitted.do">
+					<input type="hidden" name="resolver" value="${user.username}" />
+					<tr>
+						<td>${i + 1}<input type="hidden" name="rowId" value="${pending[i].id}" />
+						</td> <!-- instead of th -->
+						<td>$<fmt:formatNumber value="${pending[i].amount}"
+								minFractionDigits="2" /></td>
+						<fmt:formatDate value="${pending[i].submitted}"
+							var="formattedDate" type="date" pattern="MM-dd-yyyy" />
+						<td>${formattedDate}</td>
+						<td>${pending[i].description}</td>
+						<td>${pending[i].author.firstName}
+							${pending[i].author.lastName}</td>
+						<td>${pending[i].type.type}</td>
+						<td>${pending[i].status.status}</td>
+						<td>
+					
+						<button type="submit" class="btn btn-default mybtn-blue" aria-label="Left Align" 
+						name="newStatus" value="Approved">
+  							<span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>
+						</button>
 
-						<div id="signupalert" style="display: none"
-							class="alert alert-danger">
-							<p>Error:</p>
-							<span></span>
-						</div>
-						<div class="form-group">
-							<label for="email" class="col-md-3 control-label">Email</label>
-							<div class="col-md-9">
-								<input type="text" class="form-control" name="email"
-									placeholder="Email Address">
-							</div>
-						</div>
+<button type="submit" class="btn btn-default" name="newStatus" value="Denied">
+  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+</button>
 
-						<div class="form-group">
-							<label for="firstname" class="col-md-3 control-label">First
-								Name</label>
-							<div class="col-md-9">
-								<input type="text" class="form-control" name="firstname"
-									placeholder="First Name">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="lastname" class="col-md-3 control-label">Last
-								Name</label>
-							<div class="col-md-9">
-								<input type="text" class="form-control" name="lastname"
-									placeholder="Last Name">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="password" class="col-md-3 control-label">Password</label>
-							<div class="col-md-9">
-								<input type="password" class="form-control" name="passwd"
-									placeholder="Password">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="icode" class="col-md-3 control-label">Invitation
-								Code</label>
-							<div class="col-md-9">
-								<input type="text" class="form-control" name="icode"
-									placeholder="">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<!-- Button -->
-							<div class="col-md-offset-3 col-md-9">
-								<button id="btn-signup" type="button" class="btn btn-info">
-									<i class="icon-hand-right"></i> &nbsp Sign Up
-								</button>
-								<span style="margin-left: 8px;">or</span>
-							</div>
-						</div>
-
-						<div style="border-top: 1px solid #999; padding-top: 20px"
-							class="form-group">
-
-							<div class="col-md-offset-3 col-md-9">
-								<button id="btn-fbsignup" type="button" class="btn btn-primary">
-									<i class="icon-facebook"></i>   Sign Up with Facebook
-								</button>
-							</div>
-
-						</div>
-
-
-
+						
+						</td>
+					</tr>
 					</form>
-				</div>
+				</c:forEach>
+
+				</c:when>
+
+				<c:when test="${user.role.userRole == 'Employee'}">
+					<th></th>
+					<th>Amount</th>
+					<th>Submitted On</th>
+					<th>Description</th>
+					<!--         <th>Submitted By</th> -->
+					<th>Type</th>
+					<th>Status</th>
+					<!-- </tr>
+					</thead>
+					<tbody> -->
+					</tr>
+			</thead>
+			</table>
 			</div>
+			<div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+			<tbody>
+					
+						<c:forEach var="i" begin="0" end="${fn:length(usersData) - 1}">
+							<tr>
+								<td>${i + 1}</td>
+								<td>$<fmt:formatNumber value="${usersData[i].amount}"
+										minFractionDigits="2" /></td>
+								<fmt:formatDate value="${usersData[i].submitted}"
+									var="formattedDate" type="date" pattern="MM-dd-yyyy" />
+								<td>${formattedDate}</td>
+								<td>${usersData[i].description}</td>
+								<%--         <td>${usersData[i].author.firstName}</td> --%>
+								<td>${usersData[i].type.type}</td>
+								<td>${usersData[i].status.status}</td>
+							</tr>
+						</c:forEach>
 
-
-
-
-		</div>
+				</c:when>
+				</c:choose>
+			
+			</tbody>
+		</table>
 	</div>
-
-
-
-	<%-- <select name="selectedDay">
-	<c:forEach var="temp" items="${days}">
-		<option>${temp}</option>
-	</c:forEach>
-</select> --%>
-
-
-	<%-- <form action="pickDay.do">
-	<jsp:include page="options.jsp">
-		<jsp:param value="selectedDay" name="variable"/>
-		<jsp:param value="${days}" name="items"/>
-	</jsp:include>   <!-- dynamic -->	
-	<input type="submit" />
-</form> --%>
+	
+<c:choose>
+	<c:when test="${user.role.userRole == 'Employee'}">
+	<a name="add"></a>
+	<h1>Add a new reimbursement</h1><br/><br/>
+	<!-- We submit the employee's user ID, amount of the reimbursement, description, and type to the 
+	servlet which we then lead them to /submit.do 
+	***Maybe I can put this in a submit.do page and then it redirects them to /home.do Will possibly
+	need another jsp page***-->
+	
+	<form method="post" action="added.do">
+	
+	<input type="hidden" name="author" value="${user.usersId}" />
+	 <label>Amount</label> 
+	 	<!-- i had input-group instead of form-group -->
+	 	<!-- <div class="form-group"><input name="amount" placeholder="amount" style="color: black" required="required" class="form-control"> </div> -->   
+		
+		<div class="input-group">
+      <div class="input-group-addon">$</div>
+      <input type="text" class="form-control" name="amount" id="exampleInputAmount" placeholder="Amount" required="required">
+    </div>
+    
+	<br/><label>Description</label> 
+	<!-- <div class="input-group"><input name="description" placeholder="description" style="color: black" class="form-control"> </div>  --> 
+	
+	<textarea class="form-control" rows="3" name="description" placeholder="Description"></textarea>
+	
+	<br/><label>Type</label>
+	<select name="type" required="required" style="color: black" class="form-control">
+		<option value="" disabled selected>Select type...</option>
+		<option value="1">Lodging</option>
+		<option value="2">Travel</option>
+		<option value="3">Food</option>
+		<option value="4">Other</option>
+	</select>    <br/>
+	<input type="submit" value="Submit" style="color: black" class="btn btn-default">
+	</form>
+	<br/><br><br/>
+	</c:when>
+</c:choose>
+	<br/><br/><br/>
 </body>
+
+<script type="text/javascript">
+$(window).on("load resize ", function() {
+  var scrollWidth = $('.tbl-content').width() - $('.tbl-content table').width();
+  $('.tbl-header').css({'padding-right':scrollWidth});
+}).resize();
+
+</script>
+
 </html>
