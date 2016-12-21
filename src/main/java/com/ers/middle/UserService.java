@@ -14,40 +14,9 @@ import com.ers.data.Facade;
 public class UserService {
 
 	public Users authenticate(String username, String password) throws AuthenticationException{
-		//String password = "password";
-		// Hash a password for the first time
-/*		Facade facade = new Facade();
-		boolean correct = facade.correctLogin(username, password);
-		return correct;*/
-/*		String hashed = BCrypt.hashpw(password, BCrypt.gensalt());*/
-
-		// gensalt's log_rounds parameter determines the complexity
-		// the work factor is 2**log_rounds, and the default is 10
-		//String hashed = BCrypt.hashpw(password, BCrypt.gensalt(12));
-
-		// Check that an unencrypted password matches one that has
-		// previously been hashed
-		//String candidate = "passwod";
-		
-		
-/*		if (BCrypt.checkpw(password, hashed)){
-			System.out.println("It matches");
-			return true;
-		}
-		System.out.println("It does not match"); 
-		return false;*/
-		
-		
-/*		if (BCrypt.checkpw(password, facade.usersHashedPassword("username")));
-			System.out.println("It matches");
-		else
-			System.out.println("It does not match");*/
-		
 		Facade facade = new Facade();
 		Users user = facade.getUserByName(username);
 		if(user == null) throw new AuthenticationException();
-/*		else if(user.getPassword().equals(password))
-			return user;*/
 		else if (BCrypt.checkpw(password, facade.usersHashedPassword(username))){
 			System.out.println("True");
 			return user;
