@@ -12,11 +12,6 @@ import com.ers.beans.ReimbursementStatus;
 import com.ers.beans.ReimbursementType;
 import com.ers.beans.Users;
 
-/**
- * Opens a connection.
- * @author kawee
- *
- */
 
 class ReimbursementDAO {
 	private Connection conn;
@@ -28,7 +23,7 @@ class ReimbursementDAO {
 	
 	/**
 	 * Retrieves the ID of the reimbursement to be inserted.
-	 * @return
+	 * @return the ID
 	 * @throws SQLException
 	 */
 	
@@ -59,7 +54,7 @@ class ReimbursementDAO {
 		stmt.setTimestamp(3, reimb.getSubmitted()); 
 		stmt.setString(4, reimb.getDescription());
 		stmt.setInt(5, reimb.getAuthor().getUsersId());
-		stmt.setInt(6, reimb.getStatus().getStatusId()); //status is pending when created...pending is id#1
+		stmt.setInt(6, reimb.getStatus().getStatusId());
 		stmt.setInt(7, reimb.getType().getTypeId());
 		conn.commit();
 		stmt.executeUpdate();
@@ -127,7 +122,7 @@ class ReimbursementDAO {
 	 * @param username
 	 * @throws SQLException
 	 */
-	
+/*	
 	public void showAllByStatusOfUser(String status, String username) throws SQLException{
 		List<Reimbursement> results = new ArrayList<Reimbursement>();
 		String sql = "SELECT * FROM ERS_REIMBURSEMENT " +
@@ -142,7 +137,7 @@ class ReimbursementDAO {
 		mapRows(rs, results);
 		//conn.close();
 	}
-	
+*/	
 	/**
 	 * Selects reimbursements by the status given.
 	 * Used for managers.
@@ -166,6 +161,7 @@ class ReimbursementDAO {
 	/**
 	 * Assists us in returning all the rows in a query.
 	 * @param rs
+	 * @param results
 	 * @throws SQLException
 	 */
 	
@@ -207,9 +203,22 @@ class ReimbursementDAO {
 												  type);
 			results.add(obj);
 		}
-		/*for(int i = 0; i < results.size(); i++) {
-            System.out.println(results.get(i));
-        }*/
+	}
+	
+	public List<Reimbursement> reimbCompleted(String resolverUsername) throws SQLException{
+		List<Reimbursement> results = new ArrayList<Reimbursement>();
+		String sql = "SELECT * FROM ERS_REIMBURSEMENT " +
+					 "WHERE REIMB_RESOLVER = " +
+					 "(SELECT ERS_USERS_ID FROM ERS_USERS WHERE ERS_USERNAME = ?)";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, resolverUsername);
+		ResultSet rs = stmt.executeQuery();
+		mapRows(rs, results);
+		if(results.size() == 0) {
+			System.out.println("Could not find the user " + resolverUsername + ".");
+			return null;
+		}
+		return results;
 	}
 	
 	/**

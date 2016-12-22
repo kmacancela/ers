@@ -14,7 +14,9 @@ public class ExpenseReimbursementSystem {
 			System.out.println("It matches");
 		else System.out.println("It does not match");*/
 		
-		facade.updateUsersWithHash("pusheen");
+/*		facade.updateUsersWithHash("pusheen");*/
+		
+		System.out.println(facade.showCompleted("123unicorn"));
 		
 /*		Users user = facade.createUserObject(1);
 		//Users user = facade.getUserByName("123unicorn");

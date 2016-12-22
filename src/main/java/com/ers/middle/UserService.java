@@ -49,6 +49,11 @@ public class UserService {
 		return facade.showAllReimbByUsername(newReimb.getAuthor().getUsername());
 	}
 
+	public List<Reimbursement> showCompleted(String username) {
+		Facade facade = new Facade();
+		return facade.showCompleted(username);
+	}
+
 /*	public void addReimb(String newAmount, String username, String newDescription, String newType) {
 		Facade facade = new Facade();
 		Reimbursement reimb = facade.createReimbObject(newAmount, newDescription, username, newType);

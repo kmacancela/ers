@@ -58,6 +58,10 @@ public class BusinessDelegate {
 		return new UserService().addReimb(Double.parseDouble(amount), description, Integer.parseInt(author), Integer.parseInt(type));
 	}
 
+	public List<Reimbursement> completedReimbursements(String username) {
+		return new UserService().showCompleted(username);
+	}
+
 /*	public List<Reimbursement> addReimbursement(String newAmount, String username, String newDescription, String newType) {
 		new UserService().addReimb(newAmount, username, newDescription, newType);
 		return new UserService().returnUserReimb(username);

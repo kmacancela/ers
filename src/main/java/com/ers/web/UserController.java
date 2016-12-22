@@ -42,6 +42,9 @@ public class UserController {
 			 * from all the employees to the manager*/
 			List<Reimbursement> session3 = new BusinessDelegate().reimbursementsByStatus("Pending");
 			request.getSession().setAttribute("pending", session3);
+			
+			List<Reimbursement> session4 = new BusinessDelegate().completedReimbursements(username);
+			request.getSession().setAttribute("completed", session4);
 							
 			/* The user is forwarded to index.jsp*/
 			request.getRequestDispatcher("index.jsp").forward(request, response);
@@ -69,6 +72,9 @@ public class UserController {
 		//String submit = request.getParameter("submit"); //need?
 		List<Reimbursement> reimbAfterUpdate = new BusinessDelegate().updateReimbursement(rowId, resolver, newStatus);
 		request.getSession().setAttribute("pending", reimbAfterUpdate);
+		
+		List<Reimbursement> session4 = new BusinessDelegate().completedReimbursements(resolver);
+		request.getSession().setAttribute("completed", session4);
 		
 		/*
 		 * request.setAttribute("updated", "Successfully updated");

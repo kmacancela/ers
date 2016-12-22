@@ -307,6 +307,19 @@ public class Facade {
 		}
 	}
 	
+	public List<Reimbursement> showCompleted(String resolverUsername){
+		Connection conn = getConnection();
+		ReimbursementDAO dao = new ReimbursementDAO(conn);
+		List<Reimbursement> results = null;
+		try {
+			results = dao.reimbCompleted(resolverUsername);
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
 	/**
 	 * Returns the time stamp.
 	 * @return
