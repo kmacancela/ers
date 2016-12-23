@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
 import com.ers.beans.Reimbursement;
 import com.ers.beans.ReimbursementStatus;
 import com.ers.beans.ReimbursementType;
@@ -112,6 +115,16 @@ class ReimbursementDAO {
 			System.out.println("Could not find the user " + username + ".");
 			return null;
 		}
+		
+		
+			Collections.sort(results, new Comparator<Reimbursement>() {
+			    @Override
+			    public int compare(Reimbursement r1, Reimbursement r2) {
+			        return r2.getSubmitted().compareTo(r1.getSubmitted());
+			    }
+			}); 
+		
+		
 		return results;
 	}
 	
@@ -166,11 +179,12 @@ class ReimbursementDAO {
 	 */
 	
 	private void mapRows(ResultSet rs, List<Reimbursement> results) throws SQLException {
+		Timestamp resolved = null;
 		while(rs.next()){
 			int id = rs.getInt("REIMB_ID");
 			double amount = rs.getDouble("REIMB_AMOUNT");
 			Timestamp submitted = rs.getTimestamp("REIMB_SUBMITTED");
-			Timestamp resolved = rs.getTimestamp("REIMB_RESOLVED");
+			resolved = rs.getTimestamp("REIMB_RESOLVED");
 			String description = rs.getString("REIMB_DESCRIPTION");
 			
 			int authorId = rs.getInt("REIMB_AUTHOR");
@@ -203,6 +217,15 @@ class ReimbursementDAO {
 												  type);
 			results.add(obj);
 		}
+		
+		/*if(resolved != null){ //non-pending reimbursement
+			Collections.sort(results, new Comparator<Reimbursement>() {
+			    @Override
+			    public int compare(Reimbursement r1, Reimbursement r2) {
+			        return r2.getResolved().compareTo(r1.getResolved());
+			    }
+			}); 
+		}*/
 	}
 	
 	public List<Reimbursement> reimbCompleted(String resolverUsername) throws SQLException{
@@ -218,6 +241,14 @@ class ReimbursementDAO {
 			System.out.println("Could not find the user " + resolverUsername + ".");
 			return null;
 		}
+		
+		Collections.sort(results, new Comparator<Reimbursement>() {
+		    @Override
+		    public int compare(Reimbursement r1, Reimbursement r2) {
+		        return r2.getResolved().compareTo(r1.getResolved());
+		    }
+		}); 
+		
 		return results;
 	}
 	

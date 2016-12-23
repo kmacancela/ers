@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
 
 <style>
 	body {
@@ -33,9 +34,28 @@
  		display: none;
 	}
 	
-	th{
-		font-weight: bold;
+	.successMessage{
+		text-align: center;
+		position: relative;
+  		top: 0px;
+  		left: 470px;
+  		background-color: #5cb85c;
 	}
+	
+	.noReimb{
+		text-align: center;
+		font-size: 20px;
+		color: black;
+		position: absolute;
+  		top: 50%;
+  		left: 50%;
+ 	 	margin: -150px 0 0 -150px;
+	}
+	
+ 	.resolvedDate{
+		font-size: 10px;
+	} 
+	
 	h1{
 	  font-size: 30px;
 	  color: black;
@@ -51,6 +71,7 @@
 	.tbl-header{
 	  /* background-color: rgba(255,255,255,0.3); */
 	  background-color: #eff0f1;
+/* 	  line-height: 70%; */
 	 }
 	.tbl-content{
 	  overflow-x:auto;
@@ -58,17 +79,17 @@
 	  border: 1px solid rgba(255,255,255,0.3);
 	}
 	th{
-	  padding: 20px 15px;
-	  text-align: left;
-	  font-weight: 500;
+	  padding: 20px 8px;
+	  text-align: center;
+	  font-weight: bold;
 	  font-size: 12px;
 	 /*  color: #fff; */
-	 color:black;
+	  color:black;
 	  text-transform: uppercase;
 	}
 	td{
 	  /* vertical-align: top; */
-	  padding: 15px;
+	  padding: 5px;
 	  text-align: center;
 	  vertical-align:middle;
 	  font-weight: 300;
@@ -89,10 +110,10 @@
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-				<li class="active">
-					<a href="#" onclick='show(3);'>Home         
+				<li class="active">      
 		<c:choose>
 			<c:when test="${user.role.userRole == 'Manager'}">
+					<a href="#" onclick='show(3);'>Home 
               			<span class="badge">${fn:length(pending)} </span>
               		</a>
               	</li>
@@ -104,6 +125,7 @@
             </ul>
 			</c:when>
 			<c:when test="${user.role.userRole == 'Employee'}">
+					<a href="#">Home 
               			<span class="badge"><div id="headerCount">${fn:length(usersData)}</div></span>
               		</a>
               	</li>
@@ -116,15 +138,13 @@
 					</select>
               	</li>
               	<li>
-              		<!-- <a href="#add">Add new...</a> -->
               		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" style="margin-top: 8px; margin-left:10px;">
               			Add new...
               		</button>
               	</li>
             </ul>
 			</c:when>
-		</c:choose>
-              	
+		</c:choose>       	
             <ul class="nav navbar-nav navbar-right">
               <li role="presentation">
               	<form action="logoff.do" method="post">
@@ -138,58 +158,88 @@
 		</div>
 	</nav>
 	<br/><br/><br/><br/>
+	
+	<c:choose>
+		<c:when test="${added == 'Successful'}">
+			<div id="alert_message" class="alert successMessage" style="width:420px">
+				<span class="close" data-dismiss="alert">&times;</span>
+				<span><strong>Congratulations!</strong> Reimbursement added.</span>
+			</div>
+		</c:when>
+		<c:when test="${updated == 'Approved'}">
+			<div id="alert_message" class="alert successMessage" style="width:420px">
+				<span class="close" data-dismiss="alert">&times;</span>
+				<span><strong>Success!</strong> Reimbursement approved.</span>
+			</div>
+		</c:when>
+		<c:when test="${updated == 'Denied'}">
+			<div id="alert_message" class="alert successMessage" style="width:420px">
+				<span class="close" data-dismiss="alert">&times;</span>
+				<span><strong>Success!</strong> Reimbursement denied.</span>
+			</div>
+		</c:when>
+	</c:choose>
 				
 		<c:choose>
 			<c:when test="${user.role.userRole == 'Manager'}">
+				<c:choose>
+						<c:when test="${fn:length(pending) == 0}">
+							<div class="noReimb">
+							<img src="No-reimb.jpg"><br/>
+							*sad kitty*<br/>No reimbursements to show here!
+							</div>
+						</c:when>
+						<c:otherwise>
 	<div id="table3"> 
-	<div id="main" class="container">
-		<div class="tbl-header">
-		<h1 id="headerCount"></h1>
-    		<table cellpadding="0" cellspacing="0" border="0" class="table table-bordered table-striped table-hover table-list-search">
-				<thead>
-					<tr>
-						<th style="visibility: hidden;"></th>
-						<th>Amount</th>
-						<th>Submitted On</th>
-						<th>Description</th>
-						<th>Submitted By</th>
-						<th>Status</th>
-						<th></th>
-					</tr>
-				</thead>
-			</table>
-		</div>
-		<div class="tbl-content">
-    		<table id="tableReimbursements" cellpadding="0" cellspacing="0" border="0">
-				<tbody>
-				<c:forEach var="i" begin="0" end="${fn:length(pending) - 1}">
-					<form method="post" action="submitted.do">
-						<input type="hidden" name="resolver" value="${user.username}" />
+		<div id="main" class="container">
+			<div class="tbl-header">
+			<h1 id="headerCount"></h1>
+				<!-- cellpadding="0" cellspacing="0" border="0" ///// table-hover table-list-search table-striped-->
+	    		<table class="table table-bordered">
+					<thead>
 						<tr>
-							<td>${i + 1}<input type="hidden" name="rowId" value="${pending[i].id}" /></td>
-							<td>$<fmt:formatNumber value="${pending[i].amount}" minFractionDigits="2" /></td>
-							<fmt:formatDate value="${pending[i].submitted}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
-							<td>${formattedDate}</td>
-							<td>${pending[i].description}</td>
-							<td>${pending[i].author.firstName} ${pending[i].author.lastName}</td>
-							<td>${pending[i].type.type}</td>
-							<td>
-								<button type="submit" class="btn btn-default mybtn-blue" aria-label="Left Align" 
-								name="newStatus" value="Approved">
-		  							<span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>
-								</button>
-		
-								<button type="submit" class="btn btn-default" name="newStatus" value="Denied">
-		 							 <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color: red"></span>
-								</button>
-							</td>
+							<th>ID#</th>
+							<th>Amount</th>
+							<th>Submitted On</th>
+							<th>Description</th>
+							<th>Submitted By</th>
+							<th>Status</th>
+							<th>Action</th>
 						</tr>
-					</form>
-				</c:forEach>
-				</tbody>
-			</table>
+					</thead>
+				</table>
+			</div>
+			<div class="tbl-content">
+	    		<table id="tableReimbursements" cellpadding="0" cellspacing="0" border="0">
+					<tbody>
+					<c:forEach var="i" begin="0" end="${fn:length(pending) - 1}">
+						<form method="post" action="submitted.do">
+							<input type="hidden" name="resolver" value="${user.username}" />
+							<tr>
+								<td>${pending[i].id} <input type="hidden" name="rowId" value="${pending[i].id}" /></td>
+								<td>$<fmt:formatNumber value="${pending[i].amount}" minFractionDigits="2" /></td>
+								<fmt:formatDate value="${pending[i].submitted}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
+								<td>${formattedDate}</td>
+								<td>${pending[i].description}</td>
+								<td>${pending[i].author.firstName} ${pending[i].author.lastName}</td>
+								<td>${pending[i].type.type}</td>
+								<td>
+									<button type="submit" class="btn btn-default mybtn-blue" aria-label="Left Align" 
+									name="newStatus" value="Approved">
+			  							<span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>
+									</button>
+			
+									<button type="submit" class="btn btn-default" name="newStatus" value="Denied">
+			 							 <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color: red"></span>
+									</button>
+								</td>
+							</tr>
+						</form>
+					</c:forEach>
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</div>
 	</div>
 	<div id="table2"> 
 		<div id="main" class="container">
@@ -198,9 +248,9 @@
 	    		<table cellpadding="0" cellspacing="0" border="0" class="table table-bordered table-striped table-hover table-list-search">
 					<thead>
 						<tr>
-							<th style="visibility: hidden;"></th>
+							<th>ID#</th>
 							<th>Amount</th>
-							<th>Submitted On</th>
+							<th>Completed On</th>
 							<th>Description</th>
 							<th>Submitted By</th>
 							<th>Type</th>
@@ -212,50 +262,57 @@
 			<div class="tbl-content">
 	    		<table id="tableReimbursements" cellpadding="0" cellspacing="0" border="0">
 					<tbody>
-	                
 					<c:forEach var="i" begin="0" end="${fn:length(completed) - 1}">
-						
-							<input type="hidden" name="resolver" value="${user.username}" />
-							<tr>
-								<td>${i + 1}</td>
-								<td>$<fmt:formatNumber value="${completed[i].amount}" minFractionDigits="2" /></td>
-								<fmt:formatDate value="${completed[i].submitted}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
-								<td>${formattedDate}</td>
-								<td>${completed[i].description}</td>
-								<td>${completed[i].author.firstName} ${pending[i].author.lastName}</td>
-								<td>${completed[i].type.type}</td>
-								<td>
-									<div class="statusButtons">
-									<c:choose>
-										<c:when test="${completed[i].status.status == 'Approved'}">
-				    						<h4><span class="label label-success" style="width:96px">${completed[i].status.status}</span></h4>
-				  						</c:when>
-				  						<c:when test="${completed[i].status.status == 'Denied'}">
-				    						<h4><span class="label label-danger" style="width:96px">${completed[i].status.status}</span></h4>
-				  						</c:when>
-				  						<c:otherwise>
-				  							<h4><span class="label label-warning" style="width:96px">${completed[i].status.status}</span></h4>
-				  						</c:otherwise>
-									</c:choose>
-									</div>
-								</td>
-							</tr>
-						
+						<input type="hidden" name="resolver" value="${user.username}" />
+						<tr>
+							<td>${completed[i].id}</td>
+							<td>$<fmt:formatNumber value="${completed[i].amount}" minFractionDigits="2" /></td>
+							<fmt:formatDate value="${completed[i].resolved}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
+							<td>${formattedDate}</td>
+							<td>${completed[i].description}</td>
+							<td>${completed[i].author.firstName} ${pending[i].author.lastName}</td>
+							<td>${completed[i].type.type}</td>
+							<td>
+								<div class="statusButtons">
+								<c:choose>
+									<c:when test="${completed[i].status.status == 'Approved'}">
+				    					<h4><span class="label label-success" style="width:96px">${completed[i].status.status}</span></h4>
+				  					</c:when>
+				  					<c:when test="${completed[i].status.status == 'Denied'}">
+				    					<h4><span class="label label-danger" style="width:96px">${completed[i].status.status}</span></h4>
+				  					</c:when>
+				  					<c:otherwise>
+				  						<h4><span class="label label-warning" style="width:96px">${completed[i].status.status}</span></h4>
+				  					</c:otherwise>
+								</c:choose>
+								</div>
+							</td>
+						</tr>	
 					</c:forEach>
 	                </tbody>
-			  </table>
-			  </div>
+				</table>
+			</div>
 		</div>
-	</div>		
+	</div>	
+					</c:otherwise>
+				</c:choose>	
 			</c:when>
-			<c:when test="${user.role.userRole == 'Employee'}"> 
+			<c:when test="${user.role.userRole == 'Employee'}">
+	 				<c:choose>
+						<c:when test="${fn:length(usersData) == 0}">
+							<div class="noReimb">
+							<img src="No-reimb.jpg"><br/>
+							*sad kitty*<br/>No reimbursements to show here!
+							</div>
+						</c:when>
+						<c:otherwise>
 	<div id="main" class="container">
 		<div class="tbl-header">
 		<h1 id="headerCount"></h1>
     		<table cellpadding="0" cellspacing="0" border="0" class="table table-bordered table-striped table-hover table-list-search">
 				<thead>
 					<tr>
-						<th></th>
+						<th>ID#</th>
 						<th>Amount</th>
 						<th>Submitted On</th>
 						<th>Description</th>
@@ -268,15 +325,9 @@
 		<div class="tbl-content">
     		<table id="tableReimbursements" cellpadding="0" cellspacing="0" border="0">
 				<tbody>
-					<c:choose>
-						<c:when test="${fn:length(usersData) == 0}">
-							No reimbursements to show!
-						</c:when>
-						<c:otherwise>
-							<%-- <c:forEach var="i" begin="0" end="${fn:length(usersData) - 1}"> --%>
 							<c:forEach var="i" begin="0" end="${fn:length(usersData) - 1}">
 								<tr class="Row" data-status="${usersData[i].status.status}">
-									<td>${i + 1}</td>
+									<td>${usersData[i].id}</td>
 									<td>$<fmt:formatNumber value="${usersData[i].amount}" minFractionDigits="2" /></td>
 									<fmt:formatDate value="${usersData[i].submitted}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
 									<td>${formattedDate}</td>
@@ -286,10 +337,24 @@
 										<div class="statusButtons">
 									<c:choose>
 										<c:when test="${usersData[i].status.status == 'Approved'}">
-				    						<h4><span class="label label-success" style="width:96px">${usersData[i].status.status}</span></h4>
+				    						<div style="line-height: 10%">
+					    						<h4><span class="label label-success" style="width:96px">${usersData[i].status.status}</span></h4>
+					    						<fmt:formatDate value="${usersData[i].resolved}" var="formattedDate2" type="date" pattern="MM-dd-yyyy" />
+					    						<br/>
+					    						<div class="resolvedDate">
+					    							On ${formattedDate2} by ${usersData[i].resolver.firstName} ${usersData[i].resolver.lastName}
+					    						</div>
+				    						</div>
 				  						</c:when>
 				  						<c:when test="${usersData[i].status.status == 'Denied'}">
-				    						<h4><span class="label label-danger" style="width:96px">${usersData[i].status.status}</span></h4>
+				    						<div style="line-height: 10%">
+				    							<h4><span class="label label-danger" style="width:96px">${usersData[i].status.status}</span></h4>
+				  								<fmt:formatDate value="${usersData[i].resolved}" var="formattedDate2" type="date" pattern="MM-dd-yyyy" />
+					    						<br/>
+					    						<div class="resolvedDate">
+					    							On ${formattedDate2} by ${usersData[i].resolver.firstName} ${usersData[i].resolver.lastName}
+					    						</div>
+				    						</div>
 				  						</c:when>
 				  						<c:otherwise>
 				  							<h4><span class="label label-warning" style="width:96px">${usersData[i].status.status}</span></h4>
@@ -324,7 +389,7 @@
             				<label for="recipient-name" class="control-label">Amount:</label>
            					<div class="input-group">
             					<span class="input-group-addon">$</span>
-            					<input type="text" class="form-control" name="amount" id="exampleInputAmount" placeholder="Amount" required="required">
+            					<input type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$" class="form-control" name="amount" id="exampleInputAmount" placeholder="Amount" required="required">
           					</div>
          				</div>
 						<div class="form-group">
@@ -353,7 +418,6 @@
 </body>
 
 <script type="text/javascript">
-
 	$(document).ready(function () {
 		$('select.ddlFilterTableRow').bind('change', function () {
             $('select.ddlFilterTableRow').attr('disabled', 'disabled');
@@ -379,7 +443,12 @@
     	/* document.getElementById("table4").style.display="none"; */
     	document.getElementById("table"+nr).style.display="block";
 	}
-
+	
+	window.setTimeout(function() {
+		$("#alert_message").fadeTo(500, 0).slideUp(500, function(){
+    		$(this).remove(); 
+		});
+	}, 3000);
 </script>
 
 </html>

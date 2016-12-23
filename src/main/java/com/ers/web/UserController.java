@@ -76,10 +76,7 @@ public class UserController {
 		List<Reimbursement> session4 = new BusinessDelegate().completedReimbursements(resolver);
 		request.getSession().setAttribute("completed", session4);
 		
-		/*
-		 * request.setAttribute("updated", "Successfully updated");
-		 * 
-		 */
+		request.setAttribute("updated", newStatus);
 		
 		request.getRequestDispatcher("index.jsp").forward(request, response);
 	}
@@ -100,7 +97,7 @@ public class UserController {
 		
 		List<Reimbursement> reimbAfterAdd = new BusinessDelegate().addReimbursement(amount, description, author, type);
 		request.getSession().setAttribute("usersData", reimbAfterAdd);
-		
+		request.setAttribute("added", "Successful");
 		
 		request.getRequestDispatcher("index.jsp").forward(request, response);
 	}

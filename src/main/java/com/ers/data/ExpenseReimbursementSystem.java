@@ -16,7 +16,7 @@ public class ExpenseReimbursementSystem {
 		
 /*		facade.updateUsersWithHash("pusheen");*/
 		
-		System.out.println(facade.showCompleted("123unicorn"));
+/*		System.out.println(facade.showCompleted("123unicorn"));*/
 		
 /*		Users user = facade.createUserObject(1);
 		//Users user = facade.getUserByName("123unicorn");
@@ -52,6 +52,8 @@ public class ExpenseReimbursementSystem {
 /*		facade.createReimbObject(100.49, "Travel to Canada", 2, 2);*/
 		
 		//facade.addNewReimbursement(reimbObj);
+		
+		//facade.addUserToDB("witcher", "fear", "Alex", "Martin", "amartin@gmail.com", 1);
 		
 	}
 }
