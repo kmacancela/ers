@@ -26,14 +26,9 @@
 	.statusButtons span {
   		display: inline-block;
 	}
-	
-/* 	td {
-    	vertical-align: top;
-	} */
-	 #table2 {
+	#table2 {
  		display: none;
 	}
-	
 	.successMessage{
 		text-align: center;
 		position: relative;
@@ -41,7 +36,6 @@
   		left: 470px;
   		background-color: #5cb85c;
 	}
-	
 	.noReimb{
 		text-align: center;
 		font-size: 20px;
@@ -51,65 +45,57 @@
   		left: 50%;
  	 	margin: -150px 0 0 -150px;
 	}
-	
  	.resolvedDate{
 		font-size: 10px;
 	} 
-	
 	h1{
-	  font-size: 30px;
-	  color: black;
-	  text-transform: uppercase;
-	  font-weight: 300;
-	  text-align: center;
-	  margin-bottom: 15px;
+	  	font-size: 30px;
+	  	color: black;
+	  	text-transform: uppercase;
+	  	font-weight: 300;
+	  	text-align: center;
+	  	margin-bottom: 15px;
 	}
 	table{
-	  width:100%;
-	  table-layout: fixed;
+	  	width:100%;
+	  	table-layout: fixed;
 	}
 	.tbl-header{
-	  /* background-color: rgba(255,255,255,0.3); */
-	  background-color: #eff0f1;
-/* 	  line-height: 70%; */
+	  	background-color: #eff0f1;
 	 }
 	.tbl-content{
-	  overflow-x:auto;
-	  margin-top: 0px;
-	  border: 1px solid rgba(255,255,255,0.3);
+		overflow-x:auto;
+	  	margin-top: 0px;
+	  	border: 1px solid rgba(255,255,255,0.3);
 	}
 	th{
-	  padding: 20px 8px;
-	  text-align: center;
-	  font-weight: bold;
-	  font-size: 12px;
-	 /*  color: #fff; */
-	  color:black;
-	  text-transform: uppercase;
+		padding: 20px 8px;
+	  	text-align: center;
+	  	font-weight: bold;
+	  	font-size: 12px;
+	  	color:black;
+	  	text-transform: uppercase;
 	}
 	td{
-	  /* vertical-align: top; */
-	  padding: 5px;
-	  text-align: center;
-	  vertical-align:middle;
-	  font-weight: 300;
-	  font-size: 12px;
-	 /*  color: #fff; */
-	 color:black;
-	  border-bottom: solid 1px rgba(255,255,255,0.1);
+	  	padding: 5px;
+	  	text-align: center;
+	  	vertical-align:middle;
+	  	font-weight: 300;
+	  	font-size: 12px;
+	 	color:black;
+	  	border-bottom: solid 1px rgba(255,255,255,0.1);
 	}
-
 </style>
 </head>
 
 <body style="background-color: white">
 	<nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid" >
-          <div class="navbar-header">
+		<div class="container-fluid" >
+			<div class="navbar-header">
             <div class="navbar-brand">Welcome, ${user.firstName} ${user.lastName}!</div>
-          </div>
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
 				<li class="active">      
 		<c:choose>
 			<c:when test="${user.role.userRole == 'Manager'}">
@@ -194,16 +180,15 @@
 		<div id="main" class="container">
 			<div class="tbl-header">
 			<h1 id="headerCount"></h1>
-				<!-- cellpadding="0" cellspacing="0" border="0" ///// table-hover table-list-search table-striped-->
 	    		<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th>ID#</th>
 							<th>Amount</th>
-							<th>Submitted On</th>
 							<th>Description</th>
+							<th>Type</th>
 							<th>Submitted By</th>
-							<th>Status</th>
+							<th>Submitted On</th>
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -218,11 +203,11 @@
 							<tr>
 								<td>${pending[i].id} <input type="hidden" name="rowId" value="${pending[i].id}" /></td>
 								<td>$<fmt:formatNumber value="${pending[i].amount}" minFractionDigits="2" /></td>
+								<td>${pending[i].description}</td>
+								<td>${pending[i].type.type}</td>
+								<td>${pending[i].author.firstName} ${pending[i].author.lastName}</td>
 								<fmt:formatDate value="${pending[i].submitted}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
 								<td>${formattedDate}</td>
-								<td>${pending[i].description}</td>
-								<td>${pending[i].author.firstName} ${pending[i].author.lastName}</td>
-								<td>${pending[i].type.type}</td>
 								<td>
 									<button type="submit" class="btn btn-default mybtn-blue" aria-label="Left Align" 
 									name="newStatus" value="Approved">
@@ -245,15 +230,15 @@
 		<div id="main" class="container">
 			<div class="tbl-header">
 			<h1 id="headerCount"></h1>
-	    		<table cellpadding="0" cellspacing="0" border="0" class="table table-bordered table-striped table-hover table-list-search">
+	    		<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th>ID#</th>
 							<th>Amount</th>
-							<th>Completed On</th>
 							<th>Description</th>
-							<th>Submitted By</th>
 							<th>Type</th>
+							<th>Submitted By</th>
+							<th>Completed On</th>
 							<th>Status</th>
 						</tr>
 					</thead>
@@ -267,11 +252,11 @@
 						<tr>
 							<td>${completed[i].id}</td>
 							<td>$<fmt:formatNumber value="${completed[i].amount}" minFractionDigits="2" /></td>
+							<td>${completed[i].description}</td>
+							<td>${completed[i].type.type}</td>
+							<td>${completed[i].author.firstName} ${completed[i].author.lastName}</td>
 							<fmt:formatDate value="${completed[i].resolved}" var="formattedDate" type="date" pattern="MM-dd-yyyy" />
 							<td>${formattedDate}</td>
-							<td>${completed[i].description}</td>
-							<td>${completed[i].author.firstName} ${pending[i].author.lastName}</td>
-							<td>${completed[i].type.type}</td>
 							<td>
 								<div class="statusButtons">
 								<c:choose>
@@ -309,7 +294,7 @@
 	<div id="main" class="container">
 		<div class="tbl-header">
 		<h1 id="headerCount"></h1>
-    		<table cellpadding="0" cellspacing="0" border="0" class="table table-bordered table-striped table-hover table-list-search">
+    		<table class="table table-bordered">
 				<thead>
 					<tr>
 						<th>ID#</th>
@@ -437,10 +422,8 @@
     });
     
     function show(nr) {
-    	/* document.getElementById("table1").style.display="none"; */
     	document.getElementById("table2").style.display="none";
     	document.getElementById("table3").style.display="none";
-    	/* document.getElementById("table4").style.display="none"; */
     	document.getElementById("table"+nr).style.display="block";
 	}
 	

@@ -129,29 +129,6 @@ class ReimbursementDAO {
 	}
 	
 	/**
-	 * Selects all the reimbursement of a user by status.
-	 * Used for employees.
-	 * @param status
-	 * @param username
-	 * @throws SQLException
-	 */
-/*	
-	public void showAllByStatusOfUser(String status, String username) throws SQLException{
-		List<Reimbursement> results = new ArrayList<Reimbursement>();
-		String sql = "SELECT * FROM ERS_REIMBURSEMENT " +
-					 "WHERE REIMB_STATUS_ID = " +
-					 "(SELECT REIMB_STATUS_ID FROM ERS_REIMBURSEMENT_STATUS WHERE REIMB_STATUS = ?) " +
-					 "AND REIMB_AUTHOR = " +
-					 "(SELECT ERS_USERS_ID FROM ERS_USERS WHERE ERS_USERNAME = ?)";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, status);
-		stmt.setString(2, username);
-		ResultSet rs = stmt.executeQuery();
-		mapRows(rs, results);
-		//conn.close();
-	}
-*/	
-	/**
 	 * Selects reimbursements by the status given.
 	 * Used for managers.
 	 * @param status
@@ -217,17 +194,14 @@ class ReimbursementDAO {
 												  type);
 			results.add(obj);
 		}
-		
-		/*if(resolved != null){ //non-pending reimbursement
-			Collections.sort(results, new Comparator<Reimbursement>() {
-			    @Override
-			    public int compare(Reimbursement r1, Reimbursement r2) {
-			        return r2.getResolved().compareTo(r1.getResolved());
-			    }
-			}); 
-		}*/
 	}
 	
+	/**
+	 * Returns a list of the completed (not pending) reimbursements resolved the the given username.
+	 * @param resolverUsername
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<Reimbursement> reimbCompleted(String resolverUsername) throws SQLException{
 		List<Reimbursement> results = new ArrayList<Reimbursement>();
 		String sql = "SELECT * FROM ERS_REIMBURSEMENT " +
@@ -250,14 +224,5 @@ class ReimbursementDAO {
 		}); 
 		
 		return results;
-	}
-	
-	/**
-	 * Closes connection.
-	 * @throws SQLException
-	 */
-	
-	public void close() throws SQLException{
-		conn.close();
 	}
 }

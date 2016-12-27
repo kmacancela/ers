@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -20,79 +18,12 @@ class UsersDAO {
 		this.conn = conn;
 	}
 	
-/*	//don't think i need
-	public void selectAllUsers() throws SQLException{
-		String sql = "SELECT * FROM ERS_USERS";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();
-		mapRows(rs);	
-	}*/
-
 	/**
-	 * 
-	 * @param givenId
-	 * @throws SQLException
-	 */
-	
-	public void selectById(int givenId) throws SQLException{
-		String sql = "SELECT * FROM ERS_USERS WHERE " + 
-					 "ERS_USERS_ID = ?";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1,givenId);
-		ResultSet rs = stmt.executeQuery();
-		Users obj = null;
-		while(rs.next()){
-			int id = rs.getInt("ERS_USERS_ID");
-			String username = rs.getString("ERS_USERNAME");
-			String password = rs.getString("ERS_PASSWORD");
-			String firstName = rs.getString("USER_FIRST_NAME");
-			String lastName = rs.getString("USER_LAST_NAME");
-			String email = rs.getString("USER_EMAIL");
-			
-			int roleId = rs.getInt("USER_ROLE_ID");
-			UserRolesDAO roleDAO = new UserRolesDAO(conn);
-			UserRoles role = roleDAO.createRoleObj(roleId);
-			obj = new Users(id,username,password,firstName,lastName,email,role);
-		}
-		System.out.println(obj);
-	}
-	
-	/**
-	 * 
-	 * @param rs
-	 * @throws SQLException
-	 */
-	
-	private void mapRows(ResultSet rs) throws SQLException {
-		List<Users> results = new ArrayList<Users>();
-		while(rs.next()){
-			int id = rs.getInt("ERS_USERS_ID");
-			String username = rs.getString("ERS_USERNAME");
-			String password = rs.getString("ERS_PASSWORD");
-			String firstName = rs.getString("USER_FIRST_NAME");
-			String lastName = rs.getString("USER_LAST_NAME");
-			String email = rs.getString("USER_EMAIL");
-			
-			int roleId = rs.getInt("USER_ROLE_ID");
-			UserRolesDAO roleDAO = new UserRolesDAO(conn);
-			UserRoles role = roleDAO.createRoleObj(roleId);
-			
-			Users obj = new Users(id,username,password,firstName,lastName,email,role);
-			results.add(obj);
-		}
-		for(int i = 0; i < results.size(); i++) {
-            System.out.println(results.get(i));
-        }
-	}
-	
-	/**
-	 * 
+	 * Returns a Users object of the passed username.
 	 * @param givenUsername
 	 * @return
 	 * @throws SQLException
 	 */
-	
-	//would return 1 row because username is unique
 	public Users getUserInfoByUsername(String givenUsername) throws SQLException{
 		String sql = "SELECT * FROM ERS_USERS " +
 					 "WHERE ERS_USERNAME = ?";
@@ -137,6 +68,13 @@ class UsersDAO {
 		return false;
 	}
 	
+	/**
+	 * Returns if the password is correct or not given the username and password of the user.
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean passwordCorrect(String username, String password) throws SQLException{
 		if(!usernameFound(username)){
 			System.out.println("User not found.");
@@ -152,6 +90,12 @@ class UsersDAO {
 		return false;
 	}
 	
+	/**
+	 * Returns 1 for employee or 2 for manager after determining if the user is an employee or manager.
+	 * @param username
+	 * @return
+	 * @throws SQLException
+	 */
 	public int empOrManager(String username) throws SQLException{
 		String sql = "SELECT USER_ROLE_ID FROM ERS_USERS " + 
 					 "WHERE ERS_USERNAME = ?";
@@ -163,6 +107,12 @@ class UsersDAO {
 		return 2;
 	}
 	
+	/**
+	 * Creates and returns a Users object when passed the user ID.
+	 * @param userId
+	 * @return
+	 * @throws SQLException
+	 */
 	public Users createUserObj(int userId) throws SQLException{
 		String sql = "SELECT ERS_USERNAME, ERS_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME, USER_EMAIL, USER_ROLE_ID FROM ERS_USERS " +
 					 "WHERE ERS_USERS_ID = ?";
@@ -184,10 +134,20 @@ class UsersDAO {
 		return user;
 	}
 	
+	/**
+	 * Returns the hashed password of an unhashed password.
+	 * @param unhashedPassword
+	 * @return
+	 */
 	public String hashPassword(String unhashedPassword){
 		return BCrypt.hashpw(unhashedPassword, BCrypt.gensalt(15));
 	}
 	
+	/**
+	 * Retrieves the int of the next ID available in the ERS_USERS table.
+	 * @return
+	 * @throws SQLException
+	 */
 	public int getNextId() throws SQLException{
 		String sqlForMaxId = "SELECT MAX(ERS_USERS_ID) FROM ERS_USERS";
 		PreparedStatement maxId = conn.prepareStatement(sqlForMaxId);
@@ -197,6 +157,16 @@ class UsersDAO {
 		return theId;
 	}
 	
+	/**
+	 * Adds a user to the DB.
+	 * @param username
+	 * @param password
+	 * @param fName
+	 * @param lName
+	 * @param email
+	 * @param roleId
+	 * @throws SQLException
+	 */
 	public void addUserToDB(String username, String password, String fName, String lName, String email, int roleId) throws SQLException{
 		String sql = "INSERT INTO ERS_USERS (ERS_USERS_ID, ERS_USERNAME, ERS_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME, USER_EMAIL, USER_ROLE_ID) " + 
 					 "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -216,6 +186,12 @@ class UsersDAO {
 		System.out.println("commited");
 	}
 	
+	/**
+	 * Returns the hashed password of a user's username.
+	 * @param username
+	 * @return
+	 * @throws SQLException
+	 */
 	public String getHashed(String username) throws SQLException{
 		String sql = "SELECT ERS_PASSWORD FROM ERS_USERS " + 
 					 "WHERE ERS_USERNAME = ?";
@@ -229,6 +205,12 @@ class UsersDAO {
 		System.out.println(hashed);
 		return hashed;
 	}
+	
+	/**
+	 * Updated a user's password. Temporary use, was used to update unhashed passwords.
+	 * @param username
+	 * @throws SQLException
+	 */
 	public void updateUserPassword(String username) throws SQLException{
 		String sql2 = "SELECT ERS_PASSWORD FROM ERS_USERS " + 
 				 	  "WHERE ERS_USERNAME = ?";

@@ -22,6 +22,11 @@ public class Facade {
 		return conn;
 	}
 	
+	/**
+	 * Returns a Users object when passed the user's ID. 
+	 * @param userId
+	 * @return
+	 */
 	public Users createUserObject(int userId){
 		Connection conn = getConnection();
 		UsersDAO userDAO = new UsersDAO(conn);
@@ -30,13 +35,16 @@ public class Facade {
 			user = userDAO.createUserObj(userId);
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return user;
 	}
 	
-	
+	/**
+	 * Returns a Users object when passed the user's username.
+	 * @param username
+	 * @return
+	 */
 	public Users getUserByName(String username){
 		Connection conn = getConnection();
 		UsersDAO dao = new UsersDAO(conn);
@@ -45,12 +53,16 @@ public class Facade {
 			result = dao.getUserInfoByUsername(username);
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
+	/**
+	 * Returns a ReimbursementType object when passed the type ID.
+	 * @param typeId
+	 * @return
+	 */
 	public ReimbursementType createTypeObject(int typeId){
 		Connection conn = getConnection();
 		ReimbursementTypeDAO typeDAO = new ReimbursementTypeDAO(conn);
@@ -64,6 +76,14 @@ public class Facade {
 		return type;
 	}
 	
+	/**
+	 * Returns a ReimbursementStatus object when passed the status ID. 
+	 * 1 is pending.
+	 * 2 is approved.
+	 * 3 is denied.
+	 * @param statusId
+	 * @return
+	 */
 	public ReimbursementStatus createStatusObject(int statusId){
 		Connection conn = getConnection();
 		ReimbursementStatusDAO statusDAO = new ReimbursementStatusDAO(conn);
@@ -77,7 +97,16 @@ public class Facade {
 		return status;
 	}
 	
-																	//maybe change this to String username
+	/**
+	 * Returns a Reimbursement object after having added the reimbursement in the DB when passed
+	 * the amount, description, user's ID, and type ID. 
+	 * Only used by employees.
+	 * @param amount
+	 * @param description
+	 * @param authorId
+	 * @param typeId
+	 * @return
+	 */
 	public Reimbursement addNewReimbursement(double amount, String description, int authorId, int typeId){
 		Connection conn = getConnection();
 		ReimbursementDAO reimbDAO = new ReimbursementDAO(conn);
@@ -99,17 +128,13 @@ public class Facade {
 		return reimb;
 	}
 	
-/*	public void addNewReimbursement(Reimbursement reimb){
-		Connection conn = getConnection();
-		ReimbursementDAO dao = new ReimbursementDAO(conn);
-		try {
-			dao.insert(reimb);
-			conn.close();
-		} catch (SQLException e) {
-			System.out.println("Could not add new reimbursement.");
-		}
-	}*/
-	
+	/**
+	 * Updated an existing reimbursement when passed the new status, the username of the resolver, and
+	 * the reimbursement's ID.
+	 * @param status
+	 * @param username
+	 * @param reimbId
+	 */
 	public void updateReimbursement(String status, String username, int reimbId){
 		Connection conn = getConnection();
 		Timestamp currentDate = getCurrentTimeStamp();
@@ -122,6 +147,12 @@ public class Facade {
 		}
 	}
 	
+	/**
+	 * Returns a list of reimbursements when given the user's username. 
+	 * Used only by employees.
+	 * @param username
+	 * @return
+	 */
 	public List<Reimbursement> showAllReimbByUsername(String username){
 		Connection conn = getConnection();
 		ReimbursementDAO dao = new ReimbursementDAO(conn);
@@ -135,7 +166,12 @@ public class Facade {
 		return result;
 	}
 	
-	//for managers
+	/**
+	 * Returns a list of reimbursements of the given status. 
+	 * Used by managers.
+	 * @param status
+	 * @return
+	 */
 	public List<Reimbursement> showAllByStatus(String status){
 		Connection conn = getConnection();
 		ReimbursementDAO dao = new ReimbursementDAO(conn);
@@ -150,61 +186,11 @@ public class Facade {
 		return result;
 	}
 	
-/*	public void showAllPending(){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
-		try {
-			dao.selectByStatus("Pending");
-		} catch (SQLException e) {
-			System.out.println("Could not show pending reimbursements.");
-		}
-	}
-	
-	public void showAllApproved(){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
-		try {
-			dao.selectByStatus("Approved");
-		} catch (SQLException e) {
-			System.out.println("Could not show approved reimbursements.");
-		}
-	}
-	
-	public void showAllDenied(){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
-		try {
-			dao.selectByStatus("Denied");
-		} catch (SQLException e) {
-			System.out.println("Could not show denied reimbursements.");
-		}
-	}*/
-	
-/*	//for employees
-	public void showAllUserPending(String username){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
-		try {
-			dao.showAllByStatusOfUser("Pending", username);
-		} catch (SQLException e) {
-			System.out.println("Could not show pending reimbursements. The username " + username + " might not have been found.");
-		}
-	}
-	
-	public void showAllUserApproved(String username){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
-		try {
-			dao.showAllByStatusOfUser("Approved", username);
-		} catch (SQLException e) {
-			System.out.println("Could not show approved reimbursements. The username " + username + " might not have been found.");
-		}
-	}
-	
-	public void showAllUserDenied(String username){
-		ReimbursementDAO dao = new ReimbursementDAO(getConnection());
-		try {
-			dao.showAllByStatusOfUser("Denied", username);
-		} catch (SQLException e) {
-			System.out.println("Could not show denied reimbursements. The username " + username + " might not have been found.");
-		}
-	}*/
-	
+	/**
+	 * Returns if the account was found given the username the user entered.
+	 * @param username
+	 * @return
+	 */
 	public boolean accountFound(String username){
 		Connection conn = getConnection();
 		UsersDAO dao = new UsersDAO(conn);
@@ -221,12 +207,17 @@ public class Facade {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
+	/**
+	 * Returns if the login was correct provided the username and password.
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public boolean correctLogin(String username, String password){
 		Connection conn = getConnection();
 		UsersDAO dao = new UsersDAO(conn);
@@ -243,12 +234,16 @@ public class Facade {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
+	/**
+	 * Returns 'Employee' or 'Manager' given the username of the user.
+	 * @param username
+	 * @return
+	 */
 	public String empOrManager(String username){
 		Connection conn = getConnection();
 		String result = null;
@@ -266,12 +261,20 @@ public class Facade {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
+	/**
+	 * Adds a new user to the DB. Made it for personal use but can be implemented with a sign up JSP page.
+	 * @param username
+	 * @param password
+	 * @param fName
+	 * @param lName
+	 * @param email
+	 * @param roleId
+	 */
 	public void addUserToDB(String username, String password, String fName, String lName, String email, int roleId){
 		Connection conn = getConnection();
 		UsersDAO dao = new UsersDAO(conn);
@@ -283,6 +286,11 @@ public class Facade {
 		}
 	}
 	
+	/**
+	 * Returns the user's hashed password given the user's username. For personal use.
+	 * @param username
+	 * @return
+	 */
 	public String usersHashedPassword(String username){
 		Connection conn = getConnection();
 		UsersDAO dao = new UsersDAO(conn);
@@ -296,6 +304,11 @@ public class Facade {
 		return hashed;
 	}
 	
+	/**
+	 * Updated a user's unhashed password with a hashed version of their password given the user's
+	 * username. Made for personal use. 
+	 * @param username
+	 */
 	public void updateUsersWithHash(String username){
 		Connection conn = getConnection();
 		UsersDAO dao = new UsersDAO(conn);
@@ -307,6 +320,12 @@ public class Facade {
 		}
 	}
 	
+	/**
+	 * Returns a list of completed (approved or denied) reimbursements resolved by the given username.
+	 * For managers only.
+	 * @param resolverUsername
+	 * @return
+	 */
 	public List<Reimbursement> showCompleted(String resolverUsername){
 		Connection conn = getConnection();
 		ReimbursementDAO dao = new ReimbursementDAO(conn);
@@ -329,12 +348,4 @@ public class Facade {
 	    java.util.Date today = new java.util.Date();
 	    return new java.sql.Timestamp(today.getTime());
 	}
-	
-/*	public void close(){
-		try {
-			getConnection().close();
-		} catch (SQLException e) {
-			System.out.println("Could not close connection.");
-		}
-	}*/
 }

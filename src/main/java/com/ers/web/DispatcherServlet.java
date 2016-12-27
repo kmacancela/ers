@@ -1,20 +1,11 @@
 package com.ers.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.naming.AuthenticationException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.ers.beans.Users;
-import com.ers.middle.BusinessDelegate;
 
 @WebServlet(urlPatterns="*") //takes all HTTP requests
 public class DispatcherServlet extends HttpServlet {
@@ -35,14 +26,8 @@ public class DispatcherServlet extends HttpServlet {
 			}
 			case "/ers/added.do":{
 				userCtrl.add(request, response);
-				/*response.sendRedirect("index.jsp");*/
 				break;
 			}
-			/*case "/ers/pending.do":{
-				userCtrl.pending()
-				break;
-			}*/
-			//TODO must add a filter***
 			case "/ers/logoff.do":{
 				request.getSession().invalidate();
 		        response.sendRedirect(request.getContextPath() + "/login.jsp");

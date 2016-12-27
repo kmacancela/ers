@@ -83,14 +83,12 @@ public class Reimbursement {
 		return status;
 	}
 	public void setStatus(ReimbursementStatus status) {
-		//statusObj.setStatusId(statusId);
 		this.status = status;
 	}
 	public ReimbursementType getType() {
 		return type;
 	}
 	public void setType(ReimbursementType type) {
-		//typeObj.setTypeId(typeId);
 		this.type = type;
 	}
 	@Override

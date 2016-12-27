@@ -51,7 +51,6 @@ public class UserController {
 			
 		} catch (AuthenticationException e) { //if invalid credentials are entered
 			request.setAttribute("authFailed", "Try to login again");
-			//response.sendRedirect("login.jsp");
 			request.getRequestDispatcher("login.jsp").forward(request, response);
 		}
 	}
@@ -69,7 +68,6 @@ public class UserController {
 		String newStatus = request.getParameter("newStatus");
 		String rowId = request.getParameter("rowId");
 		
-		//String submit = request.getParameter("submit"); //need?
 		List<Reimbursement> reimbAfterUpdate = new BusinessDelegate().updateReimbursement(rowId, resolver, newStatus);
 		request.getSession().setAttribute("pending", reimbAfterUpdate);
 		
